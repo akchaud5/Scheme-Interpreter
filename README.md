@@ -1,141 +1,202 @@
-# Simple Scheme Interpreter
+# Programming Language Interpreter
 
-A lightweight Scheme interpreter implemented in Python that supports basic Scheme functionality. This interpreter provides a REPL (Read-Eval-Print Loop) environment for executing Scheme expressions and includes support for fundamental Scheme features.
+A robust programming language interpreter implemented in Python that includes lexical analysis, parsing, and execution capabilities. This interpreter implements a C-style syntax with static scoping and imperative programming features.
 
 ## Features
 
-- Core Scheme data types:
-  - Numbers (integers and floating-point)
-  - Symbols
-  - Lists
-  - Functions (including lambda expressions)
+### Language Features
+- Variables and assignment
+- Control flow statements (if, while)
+- Block scoping
+- Basic arithmetic and logical operations
+- String and numeric literals
+- Print statements
+- Comments (single-line)
 
-- Special forms:
-  - `quote`: Quote expressions without evaluation
-  - `define`: Define variables and functions
-  - `if`: Conditional expressions
-  - `lambda`: Create anonymous functions
+### Implementation Features
+- Lexical scanner with comprehensive token recognition
+- Recursive descent parser
+- Abstract Syntax Tree (AST) generation
+- Clear error reporting with line numbers
 
-- Built-in procedures:
-  - Arithmetic operations: `+`, `-`, `*`, `/`
-  - Comparison operators: `=`, `<`, `>`, `<=`, `>=`
-  - List operations: `cons`, `car`, `cdr`, `list`
-  - Type predicates: `number?`, `symbol?`, `null?`
+## Language Syntax
+
+### Variables
+```javascript
+var x = 10;
+var message = "Hello, World!";
+```
+
+### Control Flow
+```javascript
+if (x > 5) {
+    print "x is greater than 5";
+} else {
+    print "x is less than or equal to 5";
+}
+
+while (x > 0) {
+    print x;
+    x = x - 1;
+}
+```
+
+### Expressions
+```javascript
+var a = 5 + 3 * 2;
+var b = (5 + 3) * 2;
+var c = "Hello" + " " + "World";
+var isTrue = !false && true;
+```
+
+### Blocks and Scope
+```javascript
+{
+    var x = 10;
+    {
+        var y = 20;
+        print x + y;
+    }
+}
+```
 
 ## Installation
 
-1. Ensure you have Python 3.6 or later installed
-2. Clone or download the interpreter file
+1. Ensure you have Python 3.8 or later installed
+2. Clone the repository or download the interpreter files
 3. No additional dependencies are required
 
 ## Usage
 
-### Running the REPL
+### Running Programs
 
 ```bash
-python scheme_interpreter.py
+python interpreter.py your_program.txt
 ```
 
-This will start an interactive REPL where you can enter Scheme expressions.
-
-### Example Sessions
-
-```scheme
-scheme> (+ 1 2 3)
-6
-
-scheme> (define x 42)
-scheme> x
-42
-
-scheme> (if (> x 0) 'positive 'negative)
-positive
-
-scheme> (define square (lambda (x) (* x x)))
-scheme> (square 5)
-25
-
-scheme> (cons 1 (cons 2 (cons 3 '())))
-[1, 2, 3]
-
-scheme> (define factorial
-         (lambda (n)
-           (if (<= n 1)
-               1
-               (* n (factorial (- n 1))))))
-scheme> (factorial 5)
-120
+### Interactive Mode
+```bash
+python interpreter.py
 ```
 
 ### Using as a Library
 
-You can also import the interpreter in your Python code:
-
 ```python
-from scheme_interpreter import tokenize, parse, evaluate, Environment, create_global_env
+from interpreter import Scanner, Parser, Interpreter
 
-# Create a global environment
-env = create_global_env()
+# Create scanner
+source = "var x = 10; print x;"
+scanner = Scanner(source)
+tokens = scanner.scan_tokens()
 
-# Parse and evaluate Scheme expressions
-tokens = tokenize("(+ 1 2 3)")
-expr = parse(tokens)
-result = evaluate(expr, env)
-print(result)  # Output: 6
+# Parse tokens
+parser = Parser(tokens)
+statements = parser.parse()
+
+# Execute
+interpreter = Interpreter()
+interpreter.interpret(statements)
 ```
 
 ## Error Handling
 
-The interpreter includes basic error handling for common Scheme errors:
+The interpreter provides detailed error messages for:
+- Syntax errors
+- Runtime errors
+- Type errors
+- Undefined variables
+- Invalid operations
 
-```scheme
-scheme> (+ 1 'a)
-Error: Invalid expression
-
-scheme> (undefined-symbol)
-Error: Symbol not found: undefined-symbol
-
-scheme> (
-Error: Unexpected EOF
+Example error messages:
 ```
-
-## Limitations
-
-- No tail-call optimization
-- Limited standard library compared to full Scheme implementations
-- No support for complex numbers or exact arithmetic
-- No macros or continuations
-- Basic error reporting
+[line 5] Error: Undefined variable 'foo'
+[line 7] Error: Expected ';' after expression
+[line 10] Error: Cannot add number to string
+```
 
 ## Implementation Details
 
-The interpreter follows a traditional structure:
+### Scanner (Lexical Analysis)
+- Handles single and multi-character tokens
+- Recognizes keywords and identifiers
+- Processes string and number literals
+- Tracks line numbers for error reporting
 
-1. **Tokenizer**: Converts input strings into tokens
-2. **Parser**: Converts tokens into a nested list structure
-3. **Evaluator**: Evaluates the parsed expressions in an environment
-4. **Environment**: Manages variable and function bindings
+### Parser
+- Implements recursive descent parsing
+- Builds Abstract Syntax Tree (AST)
+- Handles operator precedence
+- Provides error recovery through synchronization
+
+### AST Nodes
+- Expression nodes (Binary, Unary, Literal, etc.)
+- Statement nodes (Print, Var, Block, If, While)
+- Clear separation between expressions and statements
+
+## Advanced Usage
+
+### Error Recovery
+The interpreter includes error recovery mechanisms to continue parsing after encountering errors:
+
+```javascript
+// Even with a syntax error here
+var x = ;
+
+// The interpreter can continue with valid code
+var y = 10;
+print y;
+```
+
+### Extending the Language
+To add new features, you can:
+1. Add new token types in `TokenType`
+2. Create new AST node classes
+3. Implement corresponding parser methods
+4. Add interpretation logic
+
+## Limitations
+
+- No functions or procedures yet
+- Limited built-in functions
+- No module system
+- Single-threaded execution
+- No type system or type checking
+- No garbage collection (relies on Python's GC)
 
 ## Future Improvements
 
-Potential areas for enhancement:
-
-- Add support for `let`, `cond`, and other special forms
-- Implement more standard library functions
-- Add proper tail-call optimization
-- Improve error messages and debugging features
-- Add support for loading Scheme files
-- Implement proper number tower (complex numbers, rationals)
-- Add macro system
+Planned enhancements:
+- Function declarations and calls
+- For loops
+- Break and continue statements
+- Arrays and dictionaries
+- Standard library
+- Type checking
+- Better error recovery
+- Performance optimizations
+- REPL improvements
 
 ## Contributing
 
-Feel free to contribute by:
-1. Reporting bugs
-2. Suggesting enhancements
-3. Submitting pull requests
-4. Improving documentation
+Contributions are welcome! Some areas that need work:
+1. Additional language features
+2. Better error messages
+3. Performance improvements
+4. Documentation improvements
+5. Test cases
+6. Standard library implementation
+
+## Testing
+
+To run the test suite:
+```bash
+python -m unittest tests/
+```
 
 ## License
 
-This project is open source and available under the MIT License.
+This project is available under the MIT License.
+
+## Acknowledgments
+
+This interpreter design is inspired by various programming language implementations and compiler theory texts.
